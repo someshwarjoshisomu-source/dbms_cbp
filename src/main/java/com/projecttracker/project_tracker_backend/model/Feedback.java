@@ -1,12 +1,13 @@
 package com.projecttracker.project_tracker_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "Feedback")
+@Table(name = "feedback")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,13 +18,13 @@ public class Feedback {
     private int feedbackId;
 
     // ✅ Student receiving feedback
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "student_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Student student;
 
     // ✅ Mentor giving feedback (optional — can be company later)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "mentor_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Mentor mentor;

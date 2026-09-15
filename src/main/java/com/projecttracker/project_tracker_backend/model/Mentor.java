@@ -1,10 +1,11 @@
 package com.projecttracker.project_tracker_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "Mentor")
+@Table(name = "mentor")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +24,7 @@ public class Mentor {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String passwordHash;
 

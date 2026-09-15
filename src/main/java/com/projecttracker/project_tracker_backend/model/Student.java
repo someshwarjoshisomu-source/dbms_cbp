@@ -1,13 +1,14 @@
 package com.projecttracker.project_tracker_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "Student")
-@Data                   // Generates getters, setters, toString, equals, hashCode
-@NoArgsConstructor      // Generates a no-arg constructor
-@AllArgsConstructor     // Generates a full-arg constructor
+@Table(name = "student")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Student {
 
     @Id
@@ -29,6 +30,7 @@ public class Student {
     @Column
     private int graduationYear;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String passwordHash;
 

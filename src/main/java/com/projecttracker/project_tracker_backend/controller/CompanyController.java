@@ -10,7 +10,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/companies")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class CompanyController {
 
     @Autowired
@@ -31,15 +30,8 @@ public class CompanyController {
     // ✅ 1️⃣ Create new company
     @PostMapping
     public ResponseEntity<?> createCompany(@RequestBody Company company) {
-        try {
-            Company saved = companyRepository.save(company);
-            return ResponseEntity.ok(saved);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of(
-                    "error", "❌ Failed to create company",
-                    "details", e.getMessage()
-            ));
-        }
+        Company saved = companyRepository.save(company);
+        return ResponseEntity.ok(saved);
     }
 
     // ✅ 2️⃣ Get all companies
@@ -53,8 +45,7 @@ public class CompanyController {
     public ResponseEntity<?> getCompanyById(@PathVariable int id) {
         return companyRepository.findById(id)
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404)
-                        .body(Map.of("error", "❌ Company not found")));
+                .orElseGet(() -> ResponseEntity.status(404).body(Map.of("error", "❌ Company not found with ID: " + id)));
     }
 
     // ✅ 4️⃣ Update company details
@@ -64,7 +55,6 @@ public class CompanyController {
                 .<ResponseEntity<?>>map(existing -> {
                     existing.setCompanyName(updatedCompany.getCompanyName());
                     existing.setEmail(updatedCompany.getEmail());
-                    existing.setPasswordHash(updatedCompany.getPasswordHash());
                     existing.setContactPerson(updatedCompany.getContactPerson());
                     existing.setContactNumber(updatedCompany.getContactNumber());
                     existing.setAddress(updatedCompany.getAddress());
@@ -72,33 +62,24 @@ public class CompanyController {
                     Company saved = companyRepository.save(existing);
                     return ResponseEntity.ok(saved);
                 })
-                .orElseGet(() -> ResponseEntity.status(404)
-                        .body(Map.of("error", "❌ Company not found")));
+                .orElseGet(() -> ResponseEntity.status(404).body(Map.of("error", "❌ Company not found with ID: " + id)));
     }
 
     // ✅ 5️⃣ Delete company
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCompany(@PathVariable int id) {
         if (!companyRepository.existsById(id)) {
-            return ResponseEntity.status(404).body(Map.of("error", "❌ Company not found"));
+            return ResponseEntity.status(404).body(Map.of("error", "❌ Company not found with ID: " + id));
         }
         companyRepository.deleteById(id);
         return ResponseEntity.ok(Map.of("message", "✅ Company deleted successfully"));
     }
 
-    // ✅ 6️⃣ View applications for a company’s internships
+    // ✅ 6️⃣ View applications for a company’s internships (Single SQL query, no N+1)
     @GetMapping("/{companyId}/applications")
     public ResponseEntity<?> getApplicationsByCompany(@PathVariable int companyId) {
-        List<Internship> internships = internshipRepository.findByCompanyCompanyId(companyId);
-        if (internships.isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
-
-        List<Application> allApplications = new ArrayList<>();
-        for (Internship i : internships) {
-            allApplications.addAll(applicationRepository.findByInternshipInternshipId(i.getInternshipId()));
-        }
-        return ResponseEntity.ok(allApplications);
+        List<Application> applications = applicationRepository.findByInternshipCompanyCompanyId(companyId);
+        return ResponseEntity.ok(applications);
     }
 
     // ✅ 7️⃣ Company accepts or rejects a student's application
@@ -111,15 +92,12 @@ public class CompanyController {
                 .<ResponseEntity<?>>map(app -> {
                     app.setStatus(status);
                     applicationRepository.save(app);
-                    return ResponseEntity.ok(Map.of(
-                            "message", "✅ Application updated to " + status
-                    ));
+                    return ResponseEntity.ok(Map.of("message", "✅ Application updated to " + status));
                 })
-                .orElseGet(() -> ResponseEntity.status(404)
-                        .body(Map.of("error", "❌ Application not found")));
+                .orElseGet(() -> ResponseEntity.status(404).body(Map.of("error", "❌ Application not found with ID: " + applicationId)));
     }
 
-    // ✅ 8️⃣ Assign a mentor to an accepted student
+    // ✅ 8️⃣ Assign a mentor to an accepted student (Persisted in DB)
     @PutMapping("/assign-mentor")
     public ResponseEntity<?> assignMentor(
             @RequestParam int mentorId,
@@ -133,30 +111,29 @@ public class CompanyController {
             return ResponseEntity.status(404).body(Map.of("error", "❌ Mentor or Student not found"));
         }
 
-        // Future: link mentor & student via a Project entity
+        Student student = studentOpt.get();
+        student.setMentorId(mentorId);
+        studentRepository.save(student);
+
         Map<String, Object> response = new HashMap<>();
         response.put("message", "✅ Mentor assigned successfully");
-        response.put("mentor", mentorOpt.get().getFirstName());
-        response.put("student", studentOpt.get().getFirstName());
-        response.put("internshipId", internshipId);
+        response.put("mentor", mentorOpt.get().getFirstName() + " " + mentorOpt.get().getLastName());
+        response.put("student", student.getFirstName() + " " + student.getLastName());
+        response.put("mentorId", mentorId);
+        response.put("studentId", studentId);
+        if (internshipId != null) {
+            response.put("internshipId", internshipId);
+        }
 
         return ResponseEntity.ok(response);
     }
 
-    // ✅ 9️⃣ Basic analytics for company dashboard
+    // ✅ 9️⃣ Optimized analytics for company dashboard (Database-level counts, no N+1 loops)
     @GetMapping("/{companyId}/analytics")
     public ResponseEntity<?> getCompanyAnalytics(@PathVariable int companyId) {
-        List<Internship> internships = internshipRepository.findByCompanyCompanyId(companyId);
-
-        int totalInternships = internships.size();
-        long totalApplications = internships.stream()
-                .mapToLong(i -> applicationRepository.findByInternshipInternshipId(i.getInternshipId()).size())
-                .sum();
-
-        long acceptedCount = internships.stream()
-                .flatMap(i -> applicationRepository.findByInternshipInternshipId(i.getInternshipId()).stream())
-                .filter(a -> "Accepted".equalsIgnoreCase(a.getStatus()))
-                .count();
+        int totalInternships = internshipRepository.findByCompanyCompanyId(companyId).size();
+        long totalApplications = applicationRepository.countByInternshipCompanyCompanyId(companyId);
+        long acceptedCount = applicationRepository.countByInternshipCompanyCompanyIdAndStatusIgnoreCase(companyId, "Accepted");
 
         Map<String, Object> analytics = new HashMap<>();
         analytics.put("totalInternships", totalInternships);

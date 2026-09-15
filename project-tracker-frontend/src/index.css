@@ -1,3 +1,167 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --google-primary: #FA6400;
+    --google-primary-hover: #E65100;
+    --google-primary-tint: rgba(250, 100, 0, 0.08);
+    --google-primary-tint-hover: rgba(250, 100, 0, 0.14);
+    --google-amber: #FFB300;
+    --google-surface: #F8F9FA;
+    --google-card: #FFFFFF;
+    --google-border: #E0E0E0;
+    --google-border-subtle: #F1F3F4;
+    --google-text-primary: #202124;
+    --google-text-secondary: #5F6368;
+    --google-text-tertiary: #80868B;
+    --google-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--google-surface);
+    color: var(--google-text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* ==========================================================
+   GOOGLE MATERIAL YOU DESIGN SYSTEM UTILITIES
+   ========================================================== */
+
+.google-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 1rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.google-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border-color: #D2D4D7;
+}
+
+.google-table-row {
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.google-table-row:hover {
+  background-color: rgba(250, 100, 0, 0.035);
+}
+
+/* Buttons */
+.btn-google-primary {
+  border-radius: 9999px;
+  background-color: #FA6400;
+  color: #FFFFFF;
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-google-primary:hover:not(:disabled) {
+  background-color: #E65100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  filter: brightness(0.96);
+}
+
+.btn-google-outlined {
+  border-radius: 9999px;
+  background-color: transparent;
+  border: 1px solid #DADCE0;
+  color: #202124;
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-google-outlined:hover:not(:disabled) {
+  background-color: rgba(250, 100, 0, 0.04);
+  border-color: #FA6400;
+  color: #FA6400;
+}
+
+/* Material Status Pills */
+.status-pill-applied {
+  background-color: #E8F0FE;
+  color: #1A73E8;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-pill-interviewing {
+  background-color: #FEF7E0;
+  color: #B06000;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-pill-offered,
+.status-pill-accepted {
+  background-color: #E6F4EA;
+  color: #137333;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-pill-rejected {
+  background-color: #FCE8E6;
+  color: #C5221F;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-pill-pending {
+  background-color: #FFF0D4;
+  color: #C26100;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Navigation Capsules */
+.nav-capsule-active {
+  background-color: rgba(250, 100, 0, 0.12);
+  color: #FA6400;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.nav-capsule-inactive {
+  color: #5F6368;
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-capsule-inactive:hover {
+  background-color: #F1F3F4;
+  color: #202124;
+}

@@ -1,12 +1,14 @@
 package com.projecttracker.project_tracker_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.List; // ✅ Add this line
+
+import java.util.List;
 
 @Entity
-@Table(name = "Company")
+@Table(name = "company")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,6 +24,7 @@ public class Company {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String passwordHash;
 

@@ -31,3 +31,20 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secrets and Environment ###
+.env
+.env.*
+uploads/
+*.log
+scripts/
+seed_*.py
+seed_*.sql
+Resume_Points
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+
+
+

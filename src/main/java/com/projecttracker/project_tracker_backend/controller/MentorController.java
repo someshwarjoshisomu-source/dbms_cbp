@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/mentors")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@RequestMapping({"/mentors", "/mentor"})
 public class MentorController {
 
     @Autowired
@@ -24,15 +23,8 @@ public class MentorController {
     // ✅ 1️⃣ Add new mentor
     @PostMapping
     public ResponseEntity<?> createMentor(@RequestBody Mentor mentor) {
-        try {
-            Mentor saved = mentorRepository.save(mentor);
-            return ResponseEntity.ok(saved);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "❌ Failed to create mentor");
-            error.put("details", e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
+        Mentor saved = mentorRepository.save(mentor);
+        return ResponseEntity.ok(saved);
     }
 
     // ✅ 2️⃣ Get all mentors
@@ -46,23 +38,21 @@ public class MentorController {
     public ResponseEntity<?> getMentorById(@PathVariable int id) {
         return mentorRepository.findById(id)
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404)
-                        .body(Map.of("error", "❌ Mentor not found")));
+                .orElseGet(() -> ResponseEntity.status(404).body(Map.of("error", "❌ Mentor not found with ID: " + id)));
     }
 
-    // ✅ 4️⃣ Update mentor details (⚡ fixed type issue)
+    // ✅ 4️⃣ Update mentor details
     @PutMapping("/{id}")
     public ResponseEntity<?> updateMentor(@PathVariable int id, @RequestBody Mentor updatedMentor) {
         Optional<Mentor> mentorOpt = mentorRepository.findById(id);
         if (mentorOpt.isEmpty()) {
-            return ResponseEntity.status(404).body(Map.of("error", "❌ Mentor not found"));
+            return ResponseEntity.status(404).body(Map.of("error", "❌ Mentor not found with ID: " + id));
         }
 
         Mentor existing = mentorOpt.get();
         existing.setFirstName(updatedMentor.getFirstName());
         existing.setLastName(updatedMentor.getLastName());
         existing.setEmail(updatedMentor.getEmail());
-        existing.setPasswordHash(updatedMentor.getPasswordHash());
         existing.setDepartment(updatedMentor.getDepartment());
         existing.setDesignation(updatedMentor.getDesignation());
 
@@ -74,13 +64,13 @@ public class MentorController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMentor(@PathVariable int id) {
         if (!mentorRepository.existsById(id)) {
-            return ResponseEntity.status(404).body(Map.of("error", "❌ Mentor not found"));
+            return ResponseEntity.status(404).body(Map.of("error", "❌ Mentor not found with ID: " + id));
         }
         mentorRepository.deleteById(id);
         return ResponseEntity.ok(Map.of("message", "✅ Mentor deleted successfully"));
     }
 
-    // 🚀 6️⃣ Get all applications (for mentor review dashboard)
+    // 🚀 6️⃣ Get all applications (Supports both /mentor/applications and /mentors/applications)
     @GetMapping("/applications")
     public ResponseEntity<List<Application>> getAllApplications() {
         return ResponseEntity.ok(applicationRepository.findAll());
@@ -100,7 +90,6 @@ public class MentorController {
                             "message", "✅ Application " + applicationId + " updated to " + status
                     ));
                 })
-                .orElseGet(() -> ResponseEntity.status(404)
-                        .body(Map.of("error", "❌ Application not found")));
+                .orElseGet(() -> ResponseEntity.status(404).body(Map.of("error", "❌ Application not found with ID: " + applicationId)));
     }
 }

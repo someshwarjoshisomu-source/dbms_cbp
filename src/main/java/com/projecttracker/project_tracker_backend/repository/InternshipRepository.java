@@ -10,4 +10,5 @@ import java.util.List;
 public interface InternshipRepository extends JpaRepository<Internship, Integer> {
     List<Internship> findByCompanyCompanyId(int companyId);
     List<Internship> findByStatus(String status);
+    List<Internship> findByStatusIgnoreCase(String status);
 }

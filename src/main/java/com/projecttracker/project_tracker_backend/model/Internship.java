@@ -1,13 +1,14 @@
 package com.projecttracker.project_tracker_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "Internship")
+@Table(name = "internship")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

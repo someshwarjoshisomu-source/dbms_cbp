@@ -1,12 +1,13 @@
 package com.projecttracker.project_tracker_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "Evaluation")
+@Table(name = "evaluation")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,13 +18,13 @@ public class Evaluation {
     private int evaluationId;
 
     // ✅ Student being evaluated
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "student_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Student student;
 
     // ✅ Mentor evaluating
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "mentor_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Mentor mentor;

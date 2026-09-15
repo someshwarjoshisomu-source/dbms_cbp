@@ -1,0 +1,57 @@
+name: Continuous Integration (CI)
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-backend:
+    name: Build & Test Spring Boot Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Make Maven Wrapper Executable
+        run: chmod +x mvnw
+
+      - name: Compile Backend & Run Unit Tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+          SPRING_DATASOURCE_USERNAME: test
+          SPRING_DATASOURCE_PASSWORD: test
+          JWT_SECRET: 4c2d9a7f8e1b3c5a6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c
+        run: ./mvnw test -B
+
+  build-frontend:
+    name: Build & Lint React Vite Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: project-tracker-frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./project-tracker-frontend
+        run: npm ci
+
+      - name: Build Frontend Production Bundle
+        working-directory: ./project-tracker-frontend
+        run: npm run build
