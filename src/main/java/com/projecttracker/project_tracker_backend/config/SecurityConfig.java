@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${cors.allowed-origins:http://localhost:5173}")
+    @Value("${cors.allowed-origins:http://localhost:5173,http://localhost:3000,https://*.vercel.app}")
     private String allowedOrigins;
 
     @Bean
@@ -64,13 +65,25 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+        List<String> origins = new ArrayList<>(Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
-                .toList();
+                .filter(s -> !s.isEmpty())
+                .toList());
 
-        config.setAllowedOrigins(origins);
+        // Always allow Vercel production & preview deployments and localhost
+        if (!origins.contains("https://*.vercel.app")) {
+            origins.add("https://*.vercel.app");
+        }
+        if (!origins.contains("https://project-tracker-frontend-cyan.vercel.app")) {
+            origins.add("https://project-tracker-frontend-cyan.vercel.app");
+        }
+        if (!origins.contains("http://localhost:*")) {
+            origins.add("http://localhost:*");
+        }
+
+        config.setAllowedOriginPatterns(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);

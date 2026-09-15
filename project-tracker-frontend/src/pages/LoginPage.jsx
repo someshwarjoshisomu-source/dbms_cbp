@@ -43,7 +43,14 @@ export default function LoginPage() {
                 else if (role === "company") navigate("/company");
             }, 800);
         } catch (err) {
-            const errMsg = err.response?.data?.error || "❌ Invalid email or password";
+            let errMsg = err.response?.data?.error || err.response?.data?.message;
+            if (!errMsg) {
+                if (err.message === "Network Error" || !err.response) {
+                    errMsg = "❌ Network / CORS Error: Cannot connect to backend server.";
+                } else {
+                    errMsg = "❌ Invalid email or password";
+                }
+            }
             setMessage(errMsg);
         } finally {
             setLoading(false);
