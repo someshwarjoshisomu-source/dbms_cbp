@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Actuator Observability: Uptime health is public; metrics & telemetry require auth
-                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/", "/actuator/health").permitAll()
                         .requestMatchers("/actuator/**").authenticated()
 
                         // Public authentication & documentation routes
