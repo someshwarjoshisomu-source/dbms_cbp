@@ -5,6 +5,8 @@ import api from "../services/api";
 
 export default function HomePage() {
     const navigate = useNavigate();
+    const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+    const swaggerUrl = `${apiBase}/swagger-ui.html`;
 
     const roles = [
         {
@@ -88,7 +90,7 @@ export default function HomePage() {
                             Get started now <ArrowRightIcon className="w-4 h-4" />
                         </Link>
                         <a
-                            href="http://localhost:8080/swagger-ui.html"
+                            href={swaggerUrl}
                             target="_blank"
                             rel="noreferrer"
                             className="btn-google-outlined text-sm py-2.5 px-6"
@@ -294,7 +296,7 @@ export default function HomePage() {
                 <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between text-xs text-[#5F6368] gap-4">
                     <p>© {new Date().getFullYear()} Project & Internship Tracker — Campus DBMS Engineering Portfolio</p>
                     <div className="flex gap-6">
-                        <a href="http://localhost:8080/swagger-ui.html" target="_blank" rel="noreferrer" className="hover:text-[#202124]">
+                        <a href={swaggerUrl} target="_blank" rel="noreferrer" className="hover:text-[#202124]">
                             Swagger API
                         </a>
                         <Link to="/login" className="hover:text-[#202124]">
