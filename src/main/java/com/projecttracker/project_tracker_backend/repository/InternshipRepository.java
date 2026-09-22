@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface InternshipRepository extends JpaRepository<Internship, Integer> {
     List<Internship> findByCompanyCompanyId(int companyId);
+    long countByCompanyCompanyId(int companyId);
     List<Internship> findByStatus(String status);
     List<Internship> findByStatusIgnoreCase(String status);
 }

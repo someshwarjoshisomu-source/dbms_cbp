@@ -37,7 +37,9 @@ build/
 .env.*
 uploads/
 *.log
-scripts/
+# Benchmark and Load Test scripts are tracked; data seed scripts are ignored
+!scripts/benchmark_*.py
+!scripts/load_test_*.py
 seed_*.py
 seed_*.sql
 Resume_Points

@@ -131,7 +131,7 @@ public class CompanyController {
     // ✅ 9️⃣ Optimized analytics for company dashboard (Database-level counts, no N+1 loops)
     @GetMapping("/{companyId}/analytics")
     public ResponseEntity<?> getCompanyAnalytics(@PathVariable int companyId) {
-        int totalInternships = internshipRepository.findByCompanyCompanyId(companyId).size();
+        long totalInternships = internshipRepository.countByCompanyCompanyId(companyId);
         long totalApplications = applicationRepository.countByInternshipCompanyCompanyId(companyId);
         long acceptedCount = applicationRepository.countByInternshipCompanyCompanyIdAndStatusIgnoreCase(companyId, "Accepted");
 
