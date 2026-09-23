@@ -1,7 +1,7 @@
 # ==========================================================
-# STAGE 1: Build artifact with Eclipse Temurin JDK 17
+# STAGE 1: Build artifact with Eclipse Temurin JDK 21
 # ==========================================================
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /build
 
@@ -19,7 +19,7 @@ RUN ./mvnw clean package -DskipTests -B
 # ==========================================================
 # STAGE 2: Lightweight, Secure Production Runtime
 # ==========================================================
-FROM eclipse-temurin:17-jre-alpine AS runner
+FROM eclipse-temurin:21-jre-alpine AS runner
 
 WORKDIR /app
 
